@@ -7,10 +7,17 @@
 
 import UIKit
 
-struct ShoppingList {
+struct ShoppingList: Hashable, Identifiable {
+    let id = UUID()
     var star: Bool
     var check: Bool
     let textLabel: String
+}
+
+enum Section: CaseIterable {
+    case main
+    case snb
+    case last
 }
 
 class ShoppingTableViewController: UITableViewController {
@@ -18,6 +25,17 @@ class ShoppingTableViewController: UITableViewController {
     @IBOutlet var textField: UITextField!
     @IBOutlet var addbutton: UIButton!
     @IBOutlet var buttonView: UIView!
+    
+    lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+    func createLayout() -> UICollectionViewLayout {
+        var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+        configuration.backgroundColor = .gray
+        configuration.showsSeparators = false
+        let layout = UICollectionViewCompositionalLayout.list(using: configuration)
+        return layout
+    }
+    
+    var dataSource: UICollectionViewDiffableDataSource<Section, ShoppingList>!
     
     var checkList = [
     ShoppingList(star: true, check: false, textLabel: "그립톡 구매하기"),
@@ -44,18 +62,39 @@ class ShoppingTableViewController: UITableViewController {
         addbutton.backgroundColor = .systemGray4
         addbutton.tintColor = .black
         addbutton.layer.cornerRadius = 10
-        
-        
         buttonView.backgroundColor = .systemGray5
-        
         tableView.rowHeight = 50
-        
         addbutton.addTarget(self, action: #selector(addButtonClicked), for: .touchUpInside)
+        
     }
     
     @IBAction func tapGesture(_ sender: UITapGestureRecognizer) {
         view.endEditing(true)
     }
+    @objc
+    func checkButtonTapped(sender: UIButton){
+        checkList[sender.tag].check.toggle()
+        tableView.reloadData()
+    }
+    
+    @objc
+    func starButtonTapped(sender:UIButton){
+        checkList[sender.tag].star.toggle()
+        tableView.reloadData()
+    }
+    
+    @objc
+    func addButtonClicked(){
+        guard let text = textField.text, text.count > 1 else {
+            return textField.placeholder = "2글자 이상 입력해주세요"
+        }
+        let add = ShoppingList(star: true, check: true, textLabel: text)
+        checkList.append(add)
+        
+        textField.text = ""
+        tableView.reloadData()
+    }
+    
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return checkList.count
@@ -91,34 +130,7 @@ class ShoppingTableViewController: UITableViewController {
         
         cell.starButton.tag = indexPath.row
         cell.starButton.addTarget(self, action:#selector(starButtonTapped), for: .touchUpInside)
-        
-        
         return cell
-    }
-    
-
-    @objc
-    func checkButtonTapped(sender: UIButton){
-        checkList[sender.tag].check.toggle()
-        tableView.reloadData()
-    }
-    
-    @objc
-    func starButtonTapped(sender:UIButton){
-        checkList[sender.tag].star.toggle()
-        tableView.reloadData()
-    }
-    
-    @objc
-    func addButtonClicked(){
-        guard let text = textField.text, text.count > 1 else {
-            return textField.placeholder = "2글자 이상 입력해주세요"
-        }
-        let add = ShoppingList(star: true, check: true, textLabel: text)
-        checkList.append(add)
-        
-        textField.text = ""
-        tableView.reloadData()
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -127,12 +139,9 @@ class ShoppingTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        
         if editingStyle == .delete {
-            
             checkList.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
-            
         } else if editingStyle == .insert {
             
         }

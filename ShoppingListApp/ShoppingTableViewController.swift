@@ -65,7 +65,42 @@ class ShoppingTableViewController: UITableViewController {
         buttonView.backgroundColor = .systemGray5
         tableView.rowHeight = 50
         addbutton.addTarget(self, action: #selector(addButtonClicked), for: .touchUpInside)
+        configurationCell()
         
+    }
+    
+    func updateData(){
+        var snapshot = NSDiffableDataSourceSnapshot<Section, ShoppingList>()
+        snapshot.appendSections(Section.allCases)
+        snapshot.appendItems(checkList, toSection: .main)
+        snapshot.appendItems([ShoppingList(star: false, check: false, textLabel: "집가기")], toSection: .snb)
+        dataSource.apply(snapshot)
+    }
+    
+    private func configurationCell(){
+        var registeration: UICollectionView.CellRegistration<UICollectionViewListCell, ShoppingList>!
+        registeration = UICollectionView.CellRegistration { cell, indexPath, itemIdentifier in
+            var content = UIListContentConfiguration.valueCell()
+            content.text = itemIdentifier.textLabel
+            if itemIdentifier.check {
+                content.image = UIImage(systemName: "star.fill")
+            } else {
+                content.image = UIImage(systemName: "star")
+            }
+            cell.contentConfiguration = content
+            
+            var background = UIBackgroundConfiguration.listPlainCell()
+            background.backgroundColor = .gray
+            background.cornerRadius = 10
+            background.strokeWidth = 1
+            background.strokeColor = .systemBlue
+            cell.backgroundConfiguration = background
+        }
+        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
+            let cell = collectionView.dequeueConfiguredReusableCell(using: registeration, for: indexPath, item: itemIdentifier)
+            return cell
+        })
+    
     }
     
     @IBAction func tapGesture(_ sender: UITapGestureRecognizer) {

@@ -1,5 +1,5 @@
 {
-  "originHash" : "74350aa352c5d591ca8d4f79af1d4ddfebb8db922d44b4aaadfe4515f1da67a9",
+  "originHash" : "d7b4918b9329172e802c3b8b80b2acb04e3a18a82e5914048bebbe4dab1359fd",
   "pins" : [
     {
       "identity" : "iqkeyboardmanager",
@@ -8,6 +8,24 @@
       "state" : {
         "revision" : "19e111f9246b3407fe0c334dc78fa890c40d8c67",
         "version" : "7.0.3"
+      }
+    },
+    {
+      "identity" : "rxswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ReactiveX/RxSwift.git",
+      "state" : {
+        "revision" : "b06a8c8596e4c3e8e7788e08e720e3248563ce6a",
+        "version" : "6.7.1"
+      }
+    },
+    {
+      "identity" : "snapkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SnapKit/SnapKit.git",
+      "state" : {
+        "revision" : "2842e6e84e82eb9a8dac0100ca90d9444b0307f4",
+        "version" : "5.7.1"
       }
     }
   ],
